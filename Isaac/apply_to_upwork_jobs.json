@@ -1,0 +1,104 @@
+{
+    "nodes": [
+      {
+        "id": "1",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [200, 300],
+        "name": "Receive Job Link",
+        "webhookId": "your-webhook-id",
+        "methods": ["POST"],
+        "responseMode": "onReceived",
+        "outputs": ["main"],
+        "parameters": {}
+      },
+      {
+        "id": "2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [600, 300],
+        "name": "Fetch Job Details",
+        "outputs": ["main"],
+        "parameters": {
+          "url": "={{$json[\"body\"][\"jobLink\"]}}",
+          "method": "GET",
+          "responseFormat": "string"
+        }
+      },
+      {
+        "id": "3",
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [1000, 300],
+        "name": "Extract Job Data",
+        "outputs": ["main"],
+        "parameters": {
+          "functionCode": "const cheerio = require('cheerio');\nconst html = $json[\"response\"];\nconst $ = cheerio.load(html);\n\nconst jobTitle = $('h1').text().trim();\nconst jobDescription = $('div.job-description').text().trim();\nconst skills = $('div.skills').text().trim();\n\nreturn { jobTitle, jobDescription, skills };"
+        }
+      },
+      {
+        "id": "4",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [1400, 300],
+        "name": "Generate Cover Letter",
+        "outputs": ["main"],
+        "parameters": {
+          "url": "https://api.openai.com/v1/completions",
+          "method": "POST",
+          "responseFormat": "json",
+          "jsonParameters": true,
+          "headerParametersJson": "{ \"Authorization\": \"Bearer YOUR_API_KEY\", \"Content-Type\": \"application/json\" }",
+          "bodyParametersJson": "{ \"model\": \"text-davinci-003\", \"prompt\": \"Generate a professional cover letter for the following job:\\n\\nTitle: {{$json.jobTitle}}\\nDescription: {{$json.jobDescription}}\\nSkills: {{$json.skills}}\", \"max_tokens\": 300 }"
+        }
+      },
+      {
+        "id": "5",
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [1800, 300],
+        "name": "Prepare Puppeteer Input",
+        "outputs": ["main"],
+        "parameters": {
+          "functionCode": "return {\n  jobLink: $json[\"body\"][\"jobLink\"],\n  coverLetter: $json[\"choices\"][0][\"text\"]\n};"
+        }
+      },
+      {
+        "id": "6",
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "position": [2200, 300],
+        "name": "Run Puppeteer Script",
+        "outputs": ["main"],
+        "parameters": {
+          "command": "node",
+          "arguments": ["/path/to/your/puppeteer/script.js"],
+          "options": {
+            "input": {
+              "data": {
+                "values": "{{JSON.stringify($json)}}"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "connections": {
+      "1": {
+        "main": [["2"]]
+      },
+      "2": {
+        "main": [["3"]]
+      },
+      "3": {
+        "main": [["4"]]
+      },
+      "4": {
+        "main": [["5"]]
+      },
+      "5": {
+        "main": [["6"]]
+      }
+    }
+  }
+  

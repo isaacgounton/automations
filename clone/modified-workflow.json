@@ -1,0 +1,65 @@
+{
+  "name": "HeyGen - Social Post",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ollama-api.etugrand.com/api/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "89f877460393d3647db2d792a601d1be1d3e54939f98289ef8a924b394812630"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": {
+          "model": "llama3.2:1b",
+          "prompt": "={{ $json.prompt }}",
+          "stream": false
+        }
+      },
+      "id": "5df678bd-310b-4f1e-920d-7e10a3f2a392",
+      "name": "Ollama Chat Model",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ollama-api.etugrand.com/api/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "89f877460393d3647db2d792a601d1be1d3e54939f98289ef8a924b394812630"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": {
+          "model": "llama3.2:1b",
+          "prompt": "={{ $json.prompt }}",
+          "stream": false
+        }
+      },
+      "id": "aed58363-0838-4efb-9cd5-f556e19df84f",
+      "name": "Ollama Chat Model1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        600
+      ]
+    }
+  ]
+}

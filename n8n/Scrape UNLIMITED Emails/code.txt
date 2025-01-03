@@ -1,0 +1,12 @@
+Here are the code snippets:
+Code Node #1:
+const data = $input.first().json.data
+const regex = /https?:\/\/[^\/]+/g
+urls = data.match(regex)
+return urls.map(url => ({json: {url: url}}))
+Code Node #2
+const data = $json.data
+const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(?!png|jpg|gif|jpeg)[a-zA-Z]{2,}/g
+emails = data.match(emailRegex)
+console.log(emails)
+return {json: {emails: emails}}
